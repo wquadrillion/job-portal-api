@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use \App\Http\Requests\RegisterRequest;
+use \App\Http\Requests\ForgotPasswordRequest;
+use Illuminate\Support\Facades\Password;
+
 
 class AuthController extends Controller
 {
@@ -32,7 +35,7 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        $request->validated($request->only(['name', 'email', 'password']));
+        //$request->validated($request->only(['first_name','last_name','email', 'password']));
 
         $user = User::create([
             'first_name' =>$request->first_name,
@@ -47,12 +50,25 @@ class AuthController extends Controller
         ]);
     }
 
+    public function forgot(ForgotPasswordRequest $request)
+    {
+        if(User::where('email', $request->email)->first()){
+            $status = Password::sendResetLink(
+                $request->only('email')
+            );
+        }
+
+
+        return $this->success([
+            'message' => 'If you have an account with us, Mail Sent'
+        ]);
+    }
     public function logout()
     {
         Auth::user()->currentAccessToken()->delete();
 
         return $this->success([
-            'message' => 'You have succesfully been logged out and your token has been removed'
+            'message' => 'You have successfully been logged out and your token has been removed'
         ]);
     }
 }

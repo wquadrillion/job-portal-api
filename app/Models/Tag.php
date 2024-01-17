@@ -13,6 +13,6 @@ class Tag extends Model
 
     public function jobs() 
     {
-        return $this->belongsTgitoMany(Job::class);
+        return $this->belongsToMany(Job::class);
     }
 }
